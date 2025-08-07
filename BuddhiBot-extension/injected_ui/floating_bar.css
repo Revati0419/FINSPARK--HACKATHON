@@ -1,0 +1,58 @@
+/* Main Floating Bar Container */
+#assistant-pro-bar {
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    z-index: 99999999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 25px;
+    cursor: grab;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+/* Themeing */
+#assistant-pro-bar.sunny-theme {
+    background-color: #f2f8f2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e1ebd8;
+}
+#assistant-pro-bar.night-theme {
+    background-color: #2c3e50;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid #34495e;
+}
+
+/* Bar Buttons */
+.assistant-bar-btn {
+    background-color: transparent;
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    width: 44px;
+    height: 44px;
+}
+
+.assistant-bar-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.assistant-bar-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Icon Colors based on Theme */
+.sunny-theme .assistant-bar-btn svg {
+    fill: #468855;
+}
+.night-theme .assistant-bar-btn svg {
+    fill: #ecf0f1;
+}

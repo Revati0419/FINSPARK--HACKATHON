@@ -1,0 +1,20 @@
+.assistant-pro-tooltip {
+    position: absolute;
+    z-index: 100000000;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    pointer-events: none; /* So it doesn't interfere with mouse events */
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+/* Theming */
+.assistant-pro-tooltip.sunny-theme {
+    background-color: #468855;
+    color: #f2f8f2;
+}
+.assistant-pro-tooltip.night-theme {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+}

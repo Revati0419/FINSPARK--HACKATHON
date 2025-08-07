@@ -1,0 +1,38 @@
+{
+    "manifest_version": 3,
+    "name": "Bank Buddy AI Assistant",
+    "version": "1.0",
+    "description": "AI-powered sidekick for Bank of Maharashtra users with translation and form guidance.",
+    "permissions": ["scripting", "activeTab", "storage"],
+    "host_permissions": [
+      "http://localhost/*",
+      "https://www.bankofmaharashtra.in/*"
+    ],
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": "assets/icon.png"
+    },
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": [
+          "http://localhost/*",
+          "https://www.bankofmaharashtra.in/*"
+        ],
+        "js": ["content.js"]
+      }
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "assistant/assistant.html",
+          "assistant/assistant.css",
+          "assistant/assistant.js"
+        ],
+        "matches": ["<all_urls>"]
+      }
+    ]
+  }
+  

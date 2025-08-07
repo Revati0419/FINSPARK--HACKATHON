@@ -7,106 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* --- YOUR CUSTOM GREEN-THEME DESIGN SYSTEM --- */
-        :root {
-            --color-primary: #468855;      /* Your primary green */
-            --color-primary-dark: #3a7046; /* A slightly darker shade for hovers */
-            --color-secondary: #aacbc3;     /* Your desaturated teal for accents */
-            --color-bg-main: #f2f8f2;       /* Your light green-white for main background */
-            --color-bg-accent: #e1ebd8;     /* Your light sage for accent background */
-            --color-text: #212529;
-            --color-text-muted: #5a6470;
-            --color-white: #ffffff;
-            --color-border: #dce3dc;
-            --font-family: 'Inter', sans-serif;
-            --shadow-sm: 0 4px 6px rgba(0,0,0,0.04);
-            --shadow-md: 0 10px 20px rgba(0,0,0,0.06);
-            --border-radius: 12px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: var(--font-family);
-            line-height: 1.6;
-            color: var(--color-text);
-            background-color: var(--color-bg-main);
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        /* --- STRUCTURE & LAYOUT --- */
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-        .section { padding: 6rem 0; }
-        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 3.5rem; font-weight: 700; color: var(--color-primary); }
-
-        /* --- HEADER --- */
-        .header {
-            background: var(--color-white);
-            padding: 1rem 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: var(--shadow-sm);
-            border-bottom: 1px solid #e8edea;
-        }
-        .nav-container { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.5rem; font-weight: 700; color: var(--color-primary); }
-        .nav-links { list-style: none; display: flex; gap: 1rem; }
-        .nav-links a {
-            color: var(--color-text-muted); text-decoration: none; font-weight: 500; transition: color 0.3s ease; padding: 0.5rem 1rem; border-radius: 8px;
-        }
-        .nav-links a:hover { color: var(--color-primary); }
-
-        /* --- HERO SECTION --- */
-        .hero {
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-            padding: 9rem 2rem 6rem; text-align: center; color: var(--color-white);
-        }
-        .hero-content { max-width: 800px; margin: 0 auto; }
-        .hero h1 { font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .hero p { font-size: 1.2rem; margin-bottom: 2.5rem; opacity: 0.9; }
-        
-        /* --- BUTTONS --- */
-        .btn {
-            padding: 1rem 2.5rem; border: none; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-block;
-        }
-        .btn-primary {
-            background: var(--color-primary); color: var(--color-white);
-        }
-        .btn-primary:hover { background: var(--color-primary-dark); transform: translateY(-3px); }
-        .btn-secondary {
-            background: transparent; color: var(--color-white); border: 2px solid rgba(255,255,255,0.8);
-        }
-        .btn-secondary:hover { background: rgba(255,255,255,0.1); }
-        
-        /* --- SERVICES & CARDS --- */
-        .services { background-color: var(--color-bg-accent); }
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2.5rem; }
-        .service-card {
-            background: var(--color-white); padding: 2.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow-md); text-align: center; transition: all 0.3s ease; border: 1px solid var(--color-border); cursor: pointer;
-        }
-        .service-card:hover { transform: translateY(-8px); }
-        .service-icon { margin-bottom: 1.5rem; color: var(--color-primary); font-size: 2rem; font-weight: bold; }
-        .service-card h3 { font-size: 1.5rem; margin-bottom: 1rem; }
-        .service-card p { color: var(--color-text-muted); }
-
-        /* --- FOOTER --- */
-        .footer { background: var(--color-primary); color: var(--color-white); padding: 3rem 0; text-align: center; }
-        .footer p { color: rgba(255,255,255,0.8); }
-
-        /* --- MODAL & FORMS --- */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; backdrop-filter: blur(5px); }
-        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--color-white); padding: 2.5rem; border-radius: var(--border-radius); width: 90%; max-width: 500px; }
-        .modal-header { margin-bottom: 2rem; text-align: center; }
-        .modal-header h2 { color: var(--color-primary); }
-        .close-modal { position: absolute; top: 1rem; right: 1.5rem; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #999; }
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--color-text); font-size: 0.9rem; }
-        .form-group input { width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: 8px; font-size: 1rem; }
-        .form-group input:focus { outline: none; border-color: var(--color-secondary); box-shadow: 0 0 0 3px rgba(170, 203, 195, 0.3); }
-    </style>
+    <link href="style.css" rel="stylesheet">
 </head>
 <body>
     <header class="header">
@@ -126,7 +27,7 @@
             <div class="hero-content">
                 <h1>Banking That Understands You</h1>
                 <p>Secure, accessible, and straightforward banking services, designed for everyone.</p>
-                <a href="#services" class="btn btn-secondary">Learn More</a>
+                <a href="#services" class="btn btn-secondary-outline">Learn More</a>            
             </div>
         </section>
 
@@ -158,7 +59,7 @@
         <div class="container"><p>&copy; 2025 Maharashtra Bank. All Rights Reserved.</p></div>
     </footer>
 
-    <!-- MODALS (Extension-Ready) -->
+    <!-- MODALS SECTION -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('loginModal')">&times;</button>
@@ -169,56 +70,154 @@
     <div class="modal" id="fundTransferModal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('fundTransferModal')">&times;</button>
-            <div class="modal-header"><h2>Fund Transfer</h2></div>
-            <form onsubmit="event.preventDefault(); alert('Form Submitted!'); closeModal('fundTransferModal');">
-                <div class="form-group">
-                    <label for="ifscCode">IFSC Code</label>
-                    <input type="text" id="ifscCode" required placeholder="e.g. MAHB0001234"
-                           data-help="The IFSC code is an 11-digit code that identifies a bank branch. It's on the cheque book.">
+            <div class="modal-header">
+                <h2>Fund Transfer</h2>
+                <div class="progress-bar">
+                    <div class="progress-step active" data-step="1">Recipient</div>
+                    <div class="progress-step" data-step="2">Amount</div>
+                    <div class="progress-step" data-step="3">Confirm</div>
                 </div>
-                <div class="form-group">
-                    <label for="beneficiaryAccount">Beneficiary Account Number</label>
-                    <input type="text" id="beneficiaryAccount" required placeholder="Enter recipient's account number"
-                           data-help="Enter the bank account number of the person you are sending money to. Please double-check.">
+            </div>
+            <form id="fundTransferForm" data-current-step="1" onsubmit="event.preventDefault();">
+                <!-- Step 1: Recipient Details -->
+                <div class="form-step active" data-step="1">
+                    <div class="form-group">
+                        <label for="ifscCode">IFSC Code</label>
+                        <input type="text" id="ifscCode" required placeholder="e.g. MAHB0001234" data-help="The IFSC code is an 11-digit code that identifies a bank branch.">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="beneficiaryAccount">Beneficiary Account Number</label>
+                        <input type="text" id="beneficiaryAccount" required placeholder="Recipient's account number" data-help="Enter the bank account number of the person you are sending money to.">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-navigation">
+                        <button type="button" class="btn btn-primary" onclick="goToNextStep(1)" style="margin-left: auto;">Next</button>
+                    </div>
                 </div>
-                 <div class="form-group">
-                    <label for="transferAmount">Amount (INR)</label>
-                    <input type="number" id="transferAmount" required placeholder="₹ 0.00"
-                           data-help="Enter the amount of money you want to send.">
+                <!-- Step 2: Amount & Remarks -->
+                <div class="form-step" data-step="2">
+                    <div class="form-group">
+                        <label for="transferAmount">Amount (INR)</label>
+                        <input type="number" id="transferAmount" required placeholder="₹ 0.00" data-help="Enter the amount of money you want to send.">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="remarks">Remarks (Optional)</label>
+                        <input type="text" id="remarks" placeholder="e.g., For Dinner" data-help="Add a short note for the transaction.">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-navigation">
+                        <button type="button" class="btn btn-secondary" onclick="goToPrevStep(2)">Previous</button>
+                        <button type="button" class="btn btn-primary" onclick="goToNextStep(2)">Next</button>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Proceed</button>
+                <!-- Step 3: Confirmation -->
+                <div class="form-step" data-step="3">
+                    <h4>Please confirm the details:</h4>
+                    <div id="confirmationDetails" class="confirmation-box">
+                        <p><strong>To Account:</strong> <span id="confirm-account"></span></p>
+                        <p><strong>Amount:</strong> <span id="confirm-amount"></span></p>
+                        <p><strong>Remarks:</strong> <span id="confirm-remarks"></span></p>
+                    </div>
+                     <div class="form-navigation">
+                        <button type="button" class="btn btn-secondary" onclick="goToPrevStep(3)">Previous</button>
+                        <button type="submit" class="btn btn-primary" onclick="alert('Transfer successful!'); closeModal('fundTransferModal');">Confirm & Send</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
 
+    <!-- ★★★ KYC MODAL with LIVE CAMERA ★★★ -->
     <div class="modal" id="kycModal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeModal('kycModal')">&times;</button>
-            <div class="modal-header"><h2>KYC Verification</h2></div>
-            <form onsubmit="event.preventDefault(); alert('KYC Submitted!'); closeModal('kycModal');">
-                <div class="form-group">
-                    <label for="panNumber">PAN Number</label>
-                    <input type="text" id="panNumber" required placeholder="10-digit alphanumeric ID"
-                           data-help="Your PAN is a 10-character ID issued by the Income Tax Dept.">
+      <div class="modal-content">
+          <button class="close-modal" onclick="closeModal('kycModal')">&times;</button>
+          <div class="modal-header">
+              <h2>KYC Verification</h2>
+              <div class="progress-bar kyc-progress-bar">
+                  <div class="progress-step active" data-step="1">Details</div>
+                  <div class="progress-step" data-step="2">Upload</div>
+                  <div class="progress-step" data-step="3">Selfie</div>
+                  <div class="progress-step" data-step="4">Confirm</div>
+              </div>
+          </div>
+
+          <form id="kycForm" data-current-step="1" onsubmit="event.preventDefault();">
+              <!-- Step 1: Personal Details -->
+              <div class="form-step active" data-step="1">
+                  <div class="form-group">
+                      <label for="panNumber">PAN Number</label>
+                      <input type="text" id="panNumber" required placeholder="10-digit alphanumeric ID" data-help="Your PAN is a 10-character ID issued by the Income Tax Dept.">
+                  </div>
+                  <div class="form-group">
+                      <label for="fullName">Full Name (as on PAN card)</label>
+                      <input type="text" id="fullName" required placeholder="Enter your full name" data-help="Enter your name exactly as it appears on your PAN card.">
+                  </div>
+                  <div class="form-navigation">
+                      <button type="button" class="btn btn-primary" onclick="goToKycNextStep(1)" style="margin-left: auto;">Next</button>
+                  </div>
+              </div>
+
+              <!-- Step 2: Document Upload -->
+              <div class="form-step" data-step="2">
+                   <div class="form-group">
+                      <label>Upload PAN Card</label>
+                      <div class="upload-area" id="pan-upload-area">
+                         <p>📄</p> <span>Click or drop file</span>
+                      </div>
+                      <input type="file" id="pan-file-input" hidden>
+                  </div>
+                  <div class="form-group">
+                      <label>Upload Aadhaar Card</label>
+                       <div class="upload-area" id="aadhaar-upload-area">
+                         <p>📄</p> <span>Click or drop file</span>
+                      </div>
+                      <input type="file" id="aadhaar-file-input" hidden>
+                  </div>
+                  <div class="form-navigation">
+                      <button type="button" class="btn btn-secondary" onclick="goToKycPrevStep(2)">Previous</button>
+                      <button type="button" class="btn btn-primary" onclick="goToKycNextStep(2)">Next</button>
+                  </div>
+              </div>
+              
+              <!-- Step 3: Liveness Check (Selfie) -->
+              <div class="form-step" data-step="3">
+                    <div class="selfie-booth">
+                        <!-- The <video> element will show the live camera feed -->
+                        <video id="camera-feed" class="camera-view" autoplay playsinline></video>
+                        <div class="camera-overlay">
+                            <div class="face-outline"></div>
+                            <p class="selfie-prompt">Position your face in the oval</p>
+                        </div>
+                    </div>
+                     <div class="form-navigation">
+                        <button type="button" class="btn btn-secondary" onclick="stopCameraStream(); goToKycPrevStep(3);">Previous</button>
+                        <button type="button" class="btn btn-primary" onclick="stopCameraStream(); goToKycNextStep(3);">Take Snapshot</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="aadhaarNumber">Aadhaar Number</label>
-                    <input type="text" id="aadhaarNumber" required placeholder="12-digit unique ID"
-                           data-help="Your Aadhaar is a 12-digit number. Please enter it without spaces.">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Submit</button>
-            </form>
-        </div>
+
+              <!-- Step 4: Confirmation -->
+              <div class="form-step" data-step="4">
+                  <h4>Please review your details.</h4>
+                  <div id="kycConfirmationDetails" class="confirmation-box">
+                      <p>✓ Personal Details Entered</p>
+                      <p>✓ Documents Uploaded</p>
+                      <p>✓ Liveness Check Complete</p>
+                  </div>
+                   <div class="form-navigation">
+                      <button type="button" class="btn btn-secondary" onclick="goToKycPrevStep(4)">Previous</button>
+                      <button type="submit" class="btn btn-primary" onclick="alert('KYC verification submitted!'); closeModal('kycModal');">Submit KYC</button>
+                  </div>
+              </div>
+          </form>
+      </div>
     </div>
 
-    <script>
-        function openModal(modalId) { document.getElementById(modalId).style.display = 'block'; }
-        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
-        window.addEventListener('click', function(event) {
-            if (event.target.classList.contains('modal')) {
-                closeModal(event.target.id);
-            }
-        });
-    </script>
+    
+    
+
+  <script src="script.js"></script>
+
 </body>
 </html>

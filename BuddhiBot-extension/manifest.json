@@ -1,36 +1,41 @@
 {
-    "manifest_version": 3,
-    "name": "Web Assistant",
-    "version": "1.0",
-    "description": "A browser extension for on-page translation, AI assistance, and more.",
-    "permissions": [
-      "storage",
-      "activeTab",
-      "scripting"
-    ],
-    "background": {
-      "service_worker": "background.js"
-    },
-    "action": {
-      "default_popup": "popup/popup.html",
-      "default_title": "Web Assistant"
-    },
-    "host_permissions": [
-      "http://127.0.0.1:5001/*"
-    ],
-    "content_scripts": [
-      {
-        "matches": ["<all_urls>"],
-        "comment": "This next line tells Chrome to find content_script.js in the SAME folder as this manifest file.",
-        "js": ["content_script.js"],
-        "css": [
-          "injected_ui/floating_bar.css",
-          "injected_ui/ai_panel.css",
-          "injected_ui/tooltip.css"
-        ]
-      }
-    ],
-    "icons": {
-      "128": "icon.png"
+  "manifest_version": 3,
+  "name": "Web Assistant",
+  "version": "1.0",
+  "description": "A browser extension for on-page translation, AI assistance, and more.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Web Assistant"
+  },
+  "host_permissions": [
+    "http://127.0.0.1:5001/*",
+    "https://generativelanguage.googleapis.com/"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "utils/translator.js",
+        "content_script.js"
+      ],
+      "css": [
+        "injected_ui/floating_bar.css",
+        "injected_ui/ai_panel.css",
+        "injected_ui/tooltip.css"
+      ]
     }
+  ],
+  "icons": {
+    "128": "icon.png"
   }
+}

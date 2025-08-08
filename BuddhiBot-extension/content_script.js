@@ -1,6 +1,6 @@
-// --- EMBEDDED SVGS for icons ---
 console.log("✅ [Web Assistant] Content script loaded on this page.")
 
+// --- EMBEDDED SVGS for icons ---
 const ICONS = {
     translate: `<svg viewBox="0 0 24 24"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>`,
     ai: `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15.61c-1.94-.42-3.53-1.49-4.59-2.92l1.62-1.22c.67.93 1.6 1.63 2.76 2.05v2.09zm-3.41-5.69c-.2-.62-.3-1.27-.3-1.92s.1-1.3.3-1.92l-1.61-1.23c-.53 1.03-.89 2.18-.98 3.4h2.59zm6.82 5.69v-2.09c1.16-.42 2.09-1.12 2.76-2.05l1.62 1.22c-1.06 1.43-2.65 2.5-4.59 2.92zm2.59-4.39c.2-.62.3-1.27.3-1.92s-.1-1.3-.3-1.92l1.61-1.23c.53 1.03.89 2.18.98 3.4h-2.59zM12 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`,
@@ -16,9 +16,9 @@ let bar, aiPanel; // To hold references to the DOM elements
 // --- MAIN INITIALIZATION LOGIC ---
 function init() {
     chrome.storage.sync.get(['isBarEnabled', 'theme'], (result) => {
-        if (result.isBarEnabled) {
+        if (result.isBarEnabled !== false) { // Default to true if not set
             createFloatingBar();
-            createAiPanel(); // Create AI panel along with the bar
+            createAiPanel();
         }
         applyTheme(result.theme || 'sunny');
     });
@@ -31,6 +31,14 @@ function createFloatingBar() {
     bar = document.createElement('div');
     bar.id = 'assistant-pro-bar';
     bar.innerHTML = `
+        <select id="assistant-language-selector" class="assistant-bar-btn" title="Select Language">
+            <option value="hi">Hindi</option>
+            <option value="mr">Marathi</option>
+            <option value="bn">Bengali</option>
+            <option value="gu">Gujarati</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+        </select>
         <button id="assistant-translate-btn" class="assistant-bar-btn" title="Translate Page">${ICONS.translate}</button>
         <button id="assistant-ai-btn" class="assistant-bar-btn" title="AI Assistant">${ICONS.ai}</button>
         <button id="assistant-audio-btn" class="assistant-bar-btn" title="Toggle Hover Audio">${ICONS.audio}</button>
@@ -46,7 +54,6 @@ function createAiPanel() {
 
     aiPanel = document.createElement('div');
     aiPanel.id = 'assistant-pro-ai-panel';
-    // *** MODIFIED: Inject the full chat structure here ***
     aiPanel.innerHTML = `
         <div class="ai-panel-header">
             <span class="ai-panel-title">AI Banking Assistant</span>
@@ -68,28 +75,17 @@ function createAiPanel() {
         aiPanel.classList.remove('visible');
     });
 
-    // *** NEW: Add event listeners for the chat form ***
     addChatEventListeners();
 }
 
 // --- EVENT LISTENERS ---
 function addBarEventListeners() {
-    document.getElementById('assistant-translate-btn').addEventListener('click', () => {
-        console.log('Full page translation initiated.');
-    });
-
-    document.getElementById('assistant-ai-btn').addEventListener('click', () => {
-        aiPanel.classList.toggle('visible');
-    });
-
-    document.getElementById('assistant-audio-btn').addEventListener('click', () => {
-        console.log('Audio hover toggled.');
-    });
-
+    document.getElementById('assistant-translate-btn').addEventListener('click', handlePageTranslation);
+    document.getElementById('assistant-ai-btn').addEventListener('click', () => aiPanel.classList.toggle('visible'));
+    document.getElementById('assistant-audio-btn').addEventListener('click', () => console.log('Audio hover toggled.'));
     document.getElementById('assistant-theme-btn').addEventListener('click', toggleTheme);
 }
 
-// *** NEW: All chat logic is now here ***
 function addChatEventListeners() {
     const chatForm = aiPanel.querySelector('#ai-chat-form');
     const userInput = aiPanel.querySelector('#ai-user-input');
@@ -99,25 +95,19 @@ function addChatEventListeners() {
         e.preventDefault();
         const userMessage = userInput.value.trim();
         if (userMessage === '') return;
-
         addChatMessage(userMessage, 'user');
         userInput.value = '';
-
         const loadingMessage = addChatMessage('...', 'bot loading');
-
         try {
             const response = await fetch(BACKEND_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: userMessage }),
             });
-
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
             const data = await response.json();
             loadingMessage.innerHTML = `<p>${data.answer}</p>`;
             loadingMessage.classList.remove('loading');
-
         } catch (error) {
             console.error('Error connecting to the backend:', error);
             loadingMessage.innerHTML = `<p>Sorry, I can't connect. Please ensure the backend server is running.</p>`;
@@ -130,7 +120,6 @@ function addChatMessage(text, type) {
     const chatBody = aiPanel.querySelector('.ai-panel-body');
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}`;
-
     if (type.includes('loading')) {
         messageDiv.innerHTML = `<span></span><span></span><span></span>`;
     } else {
@@ -138,14 +127,91 @@ function addChatMessage(text, type) {
         p.textContent = text;
         messageDiv.appendChild(p);
     }
-
     chatBody.appendChild(messageDiv);
-    chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll
+    chatBody.scrollTop = chatBody.scrollHeight;
     return messageDiv;
 }
 
+// --- NEW HELPER & TRANSLATION FUNCTIONS ---
 
-// --- FEATURES & HELPERS (Unchanged) ---
+function getTextNodes() {
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode: node => {
+            const parentTag = node.parentNode.nodeName.toUpperCase();
+            if (parentTag === 'SCRIPT' || parentTag === 'STYLE' || parentTag === 'NOSCRIPT' || node.parentNode.closest('#assistant-pro-bar, #assistant-pro-ai-panel')) {
+                return NodeFilter.FILTER_REJECT;
+            }
+            if (!node.nodeValue.trim()) {
+                return NodeFilter.FILTER_REJECT;
+            }
+            return NodeFilter.FILTER_ACCEPT;
+        }
+    });
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    return nodes;
+}
+
+function showNotification(message, isError = false) {
+    let notification = document.querySelector('.assistant-notification');
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.className = 'assistant-notification';
+        document.body.appendChild(notification);
+    }
+    notification.textContent = message;
+    notification.className = `assistant-notification visible ${isError ? 'error' : ''}`;
+    setTimeout(() => notification.classList.remove('visible'), 4000);
+}
+
+// REPLACE your old function with this TEMPORARY test version
+// Replace the temporary test function with this final version
+async function handlePageTranslation() {
+    const translateBtn = document.getElementById('assistant-translate-btn');
+    if (translateBtn.disabled) return;
+
+    translateBtn.disabled = true;
+    translateBtn.classList.add('processing');
+    showNotification('Starting translation...');
+
+    try {
+        const textNodes = getTextNodes();
+        if (textNodes.length === 0) {
+            showNotification('No text found to translate.', true);
+            return;
+        }
+
+        // Get the chosen language from your dropdown menu
+        const selectedLanguage = document.getElementById('assistant-language-selector').value;
+        const CHUNK_SIZE = 40; // Process page in smaller parts for reliability
+
+        for (let i = 0; i < textNodes.length; i += CHUNK_SIZE) {
+            const chunk = textNodes.slice(i, i + CHUNK_SIZE);
+            const combinedText = chunk.map(n => n.nodeValue).join('|||');
+            
+            // This calls the working translateText function in translator.js
+            const translatedCombinedText = await translateText(combinedText, selectedLanguage);
+
+            const translatedParts = translatedCombinedText.split('|||');
+
+            // Replace original text with the translation
+            chunk.forEach((node, index) => {
+                if (translatedParts[index]) {
+                    node.nodeValue = ` ${translatedParts[index].trim()} `;
+                }
+            });
+            showNotification(`Translating... ${Math.round((i + chunk.length) / textNodes.length * 100)}%`);
+        }
+        showNotification('Page translation complete! 🎉');
+    } catch (error) {
+        console.error('Page translation failed:', error);
+        showNotification(`Error: ${error.message}`, true);
+    } finally {
+        translateBtn.disabled = false;
+        translateBtn.classList.remove('processing');
+    }
+}
+// --- EXISTING HELPER FUNCTIONS ---
 function toggleTheme() {
     chrome.storage.sync.get('theme', (result) => {
         const newTheme = result.theme === 'sunny' ? 'night' : 'sunny';
@@ -154,32 +220,22 @@ function toggleTheme() {
 }
 
 function applyTheme(theme) {
-    // This function logic remains the same
     const themeIconBtn = document.getElementById('assistant-theme-btn');
     const elementsToTheme = document.querySelectorAll('#assistant-pro-bar, #assistant-pro-ai-panel');
-
     if (theme === 'night') {
         document.body.classList.add('assistant-night-mode');
-        elementsToTheme.forEach(el => {
-            el.classList.remove('sunny-theme');
-            el.classList.add('night-theme');
-        });
+        elementsToTheme.forEach(el => el.classList.add('night-theme'));
         if (themeIconBtn) themeIconBtn.innerHTML = ICONS.sunny;
     } else {
         document.body.classList.remove('assistant-night-mode');
-        elementsToTheme.forEach(el => {
-            el.classList.remove('night-theme');
-            el.classList.add('sunny-theme');
-        });
+        elementsToTheme.forEach(el => el.classList.remove('night-theme'));
         if (themeIconBtn) themeIconBtn.innerHTML = ICONS.night;
     }
 }
 
 function makeDraggable(element) {
-    // This function logic remains the same
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     element.onmousedown = dragMouseDown;
-
     function dragMouseDown(e) { e.preventDefault(); pos3 = e.clientX; pos4 = e.clientY; document.onmouseup = closeDragElement; document.onmousemove = elementDrag; }
     function elementDrag(e) { e.preventDefault(); pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY; pos3 = e.clientX; pos4 = e.clientY; element.style.top = (element.offsetTop - pos2) + "px"; element.style.left = (element.offsetLeft - pos1) + "px"; }
     function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
@@ -192,7 +248,7 @@ function destroyUI() {
     aiPanel = null;
 }
 
-// --- CHROME MESSAGE LISTENER (Unchanged) ---
+// --- CHROME MESSAGE LISTENER ---
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'toggleBar') {
         if (request.isEnabled) {

@@ -1,0 +1,23 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+.env
+
+# Python generated files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*egg-info/
+
+# IDE / Editor folders (like the .vscode folder in your screenshot)
+.vscode/
+.idea/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log

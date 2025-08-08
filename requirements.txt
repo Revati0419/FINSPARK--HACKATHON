@@ -1,0 +1,12 @@
+flask
+flask-cors
+langchain
+langchain-community
+transformers
+torch
+sentence-transformers
+faiss-cpu
+pypdf
+pandas
+accelerate
+bitsandbytes

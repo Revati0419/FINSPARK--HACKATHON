@@ -147,3 +147,14 @@
 #ai-send-button:hover {
     background-color: #3a7a4a;
 }
+
+/* Add this to your existing ai_panel.css file */
+#ai-language-selector {
+    margin-left: auto; /* Pushes the dropdown to the right of the title */
+    margin-right: 10px;
+    padding: 2px 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 12px;
+}

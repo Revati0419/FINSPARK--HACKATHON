@@ -3,7 +3,6 @@
 
 function renderSettingsPanel() {
     const settingsView = document.getElementById('ai-settings-view');
-    // --- UPDATED HTML to match your new design ---
     settingsView.innerHTML = `
         <div class="ai-panel-body settings-body">
             <div class="setting-row">
@@ -22,32 +21,18 @@ function renderSettingsPanel() {
                     <option value="te" ${assistantState.language === 'te' ? 'selected' : ''}>Telugu</option>
                 </select>
             </div>
-
-            <!-- START: NEW Audio Settings Section -->
             <div class="setting-group">
                 <label>Audio Playback Mode</label>
                 <div class="radio-group">
-                    <div class="radio-option">
-                        <input type="radio" id="audio-both" name="audio-mode" value="both" ${assistantState.audioMode === 'both' ? 'checked' : ''}>
-                        <label for="audio-both">English, then Primary</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="audio-target" name="audio-mode" value="target-only" ${assistantState.audioMode === 'target-only' ? 'checked' : ''}>
-                        <label for="audio-target">Primary Language Only</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="audio-english" name="audio-mode" value="english-only" ${assistantState.audioMode === 'english-only' ? 'checked' : ''}>
-                        <label for="audio-english">English Only</label>
-                    </div>
+                    <div class="radio-option"><input type="radio" id="audio-both" name="audio-mode" value="both" ${assistantState.audioMode === 'both' ? 'checked' : ''}><label for="audio-both">English, then Primary</label></div>
+                    <div class="radio-option"><input type="radio" id="audio-target" name="audio-mode" value="target-only" ${assistantState.audioMode === 'target-only' ? 'checked' : ''}><label for="audio-target">Primary Language Only</label></div>
+                    <div class="radio-option"><input type="radio" id="audio-english" name="audio-mode" value="english-only" ${assistantState.audioMode === 'english-only' ? 'checked' : ''}><label for="audio-english">English Only</label></div>
                 </div>
             </div>
-
             <div class="setting-row">
                 <label for="cloud-tts-toggle">Enable High-Quality Voices</label>
                 <label class="switch"><input type="checkbox" id="cloud-tts-toggle" ${assistantState.useCloudTTS ? 'checked' : ''}><span class="slider round"></span></label>
             </div>
-            <!-- END: NEW Audio Settings Section -->
-
             <div class="setting-row">
                 <label for="tooltip-toggle">Enable AI Tooltips</label>
                 <label class="switch"><input type="checkbox" id="tooltip-toggle" ${assistantState.tooltipsEnabled ? 'checked' : ''}><span class="slider round"></span></label>
@@ -62,25 +47,52 @@ function renderSettingsPanel() {
     addSettingsEventListeners();
 }
 
+// --- THIS IS THE CORRECTED AND COMPLETE FUNCTION ---
 function addSettingsEventListeners() {
-    document.getElementById('save-settings-btn').addEventListener('click', () => {
-        // --- UPDATED to save all new and old settings ---
+    const saveButton = document.getElementById('save-settings-btn');
+    if (!saveButton) return;
+
+    saveButton.addEventListener('click', () => {
+        console.log("Save button clicked!");
+
+        // 1. Read all the current values from the form inputs
         const newTheme = document.getElementById('theme-toggle').checked ? 'night' : 'sunny';
+        const newLanguage = document.getElementById('language-setting').value;
+        const newAudioMode = document.querySelector('input[name="audio-mode"]:checked').value;
+        const newUseCloudTTS = document.getElementById('cloud-tts-toggle').checked;
+        const newTooltipsEnabled = document.getElementById('tooltip-toggle').checked;
+        const newFormHelperEnabled = document.getElementById('form-helper-toggle').checked;
 
-        // Update the global state object with all values from the form
+        console.log("New Language Selected:", newLanguage);
+
+        // 2. Update the global assistantState object
         assistantState.theme = newTheme;
-        assistantState.language = document.getElementById('language-setting').value;
-        assistantState.audioMode = document.querySelector('input[name="audio-mode"]:checked').value;
-        assistantState.useCloudTTS = document.getElementById('cloud-tts-toggle').checked;
-        assistantState.tooltipsEnabled = document.getElementById('tooltip-toggle').checked;
-        assistantState.formHelperEnabled = document.getElementById('form-helper-toggle').checked;
+        assistantState.language = newLanguage;
+        assistantState.audioMode = newAudioMode;
+        assistantState.useCloudTTS = newUseCloudTTS;
+        assistantState.tooltipsEnabled = newTooltipsEnabled;
+        assistantState.formHelperEnabled = newFormHelperEnabled;
+        
+        console.log("Global state updated:", assistantState);
 
-        // Apply theme instantly without a page reload
+        // 3. Apply changes that have an immediate visual effect
         applyTheme(newTheme);
 
-        // Save the entire updated state object to Chrome's storage
+        // 4. Save the entire state object to make it persistent
         chrome.storage.sync.set(assistantState, () => {
-            showNotification('Settings saved!');
+            // This is a callback function that runs after the save is complete
+            if (chrome.runtime.lastError) {
+                console.error("Error saving settings:", chrome.runtime.lastError);
+                showNotification("Error: Could not save settings.", true);
+            } else {
+                console.log("Settings successfully saved to chrome.storage.");
+                showNotification('Settings saved successfully!');
+                
+                // 5. Tell the AI panel to update its greeting with the new language
+                if (window.setAiPanelGreeting) {
+                    window.setAiPanelGreeting();
+                }
+            }
         });
     });
 }

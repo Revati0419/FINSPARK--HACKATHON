@@ -70,6 +70,11 @@ function addBarEventListeners() {
         const selectedText = window.getSelection().toString().trim();
         aiPanel.classList.add('visible');
         showAiPanelTab('ai-chat-view'); // from ai.js
+
+        if (window.setAiPanelGreeting) {
+            window.setAiPanelGreeting();
+        }
+
         if (selectedText) {
             const userInput = aiPanel.querySelector('#ai-user-input');
             const chatForm = aiPanel.querySelector('#ai-chat-form');
@@ -157,14 +162,21 @@ function addBarEventListeners() {
         });
     });
 }
+// In content_script.js
+// In content_script.js
 
-// --- TRANSLATION LOGIC ---
+// In content_script.js
+
 async function handlePageTranslation() {
     const translateBtn = document.getElementById('assistant-translate-btn');
-    if (translateBtn.disabled) return;
-    translateBtn.disabled = true;
-    translateBtn.classList.add('processing');
-    showNotification('Starting translation...');
+    if (translateBtn.classList.contains('processing')) return; // Prevent multiple clicks
+
+    // --- THIS IS THE KEY CHANGE ---
+    // Instead of disabling, we add the .processing class
+    translateBtn.classList.add('processing'); 
+    
+    // We still show notifications for status updates
+    showNotification('Processing page text...');
 
     try {
         const textNodes = getTextNodes();
@@ -172,31 +184,60 @@ async function handlePageTranslation() {
             showNotification('No text found to translate.', true);
             return;
         }
+
         const selectedLanguage = assistantState.language;
-        const CHUNK_SIZE = 40;
-        for (let i = 0; i < textNodes.length; i += CHUNK_SIZE) {
-            const chunk = textNodes.slice(i, i + CHUNK_SIZE);
-            const combinedText = chunk.map(n => n.nodeValue).join('|||');
-            // Calls the function from translator.js
-            const translatedCombinedText = await translateText(combinedText, selectedLanguage);
-            const translatedParts = translatedCombinedText.split('|||');
-            chunk.forEach((node, index) => {
-                if (translatedParts[index]) {
+        const separator = '|||---|||';
+        const MAX_CHUNK_LENGTH = 4000;
+        const textChunks = [];
+        const nodeMap = [];
+        let currentChunk = [];
+        let currentChunkNodes = [];
+
+        for (const node of textNodes) {
+            currentChunk.push(node.nodeValue);
+            currentChunkNodes.push(node);
+            if (currentChunk.join(separator).length > MAX_CHUNK_LENGTH) {
+                textChunks.push(currentChunk.join(separator));
+                nodeMap.push(currentChunkNodes);
+                currentChunk = [];
+                currentChunkNodes = [];
+            }
+        }
+        if (currentChunk.length > 0) {
+            textChunks.push(currentChunk.join(separator));
+            nodeMap.push(currentChunkNodes);
+        }
+
+        showNotification(`Translating ${textChunks.length} batches...`);
+        const translationPromises = textChunks.map(chunk => translateText(chunk, selectedLanguage));
+        const translatedChunks = await Promise.all(translationPromises);
+        
+        if (translatedChunks.some(c => c.includes('[Error]'))) {
+            throw new Error("One or more translation batches failed.");
+        }
+        
+        for (let i = 0; i < translatedChunks.length; i++) {
+            const translatedParts = translatedChunks[i].split(separator);
+            const originalNodes = nodeMap[i];
+            if (translatedParts.length === originalNodes.length) {
+                originalNodes.forEach((node, index) => {
                     node.nodeValue = ` ${translatedParts[index].trim()} `;
-                }
-            });
-            showNotification(`Translating... ${Math.round((i + chunk.length) / textNodes.length * 100)}%`);
+                });
+            } else {
+                console.warn(`Mismatch in chunk ${i}. Original: ${originalNodes.length}, Translated: ${translatedParts.length}.`);
+            }
         }
         showNotification('Page translation complete! 🎉');
+
     } catch (error) {
         console.error('Page translation failed:', error);
         showNotification(`Error: ${error.message}`, true);
     } finally {
-        translateBtn.disabled = false;
+        // --- THIS IS THE OTHER KEY CHANGE ---
+        // We remove the .processing class to restore the button's original state
         translateBtn.classList.remove('processing');
     }
 }
-
 // --- HELPER FUNCTIONS (SHARED) ---
 function getTextNodes() {
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {

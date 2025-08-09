@@ -1,44 +1,43 @@
+// ✅ [Web Assistant] content_script.js (Main Controller)
+// This script handles initialization, state management, and core UI creation.
 
 console.log("✅ [Web Assistant] Content script loaded on this page.");
+// ADD THIS LINE
 
-// --- EMBEDDED SVGS for icons ---
-// This object contains all your SVG icon data.
+// --- ICONS & CONFIGURATION ---
 const ICONS = {
-    translate: `<svg viewBox="0 0 24 24">...</svg>`,
-    ai: `<svg viewBox="0 0 24 24">...</svg>`,
-    audio: `<svg viewBox="0 0 24 24">...</svg>`,
-    sunny: `<svg viewBox="0 0 24 24">...</svg>`,
-    night: `<svg viewBox="0 0 24 24">...</svg>`,
-    close: `<svg viewBox="0 0 24 24">...</svg>`,
-    send: `<svg viewBox="0 0 24 24">...</svg>`,
-    settings: `<svg viewBox="0 0 24 24">...</svg>`,
-    help: `<svg viewBox="0 0 24 24">...</svg>`
+    translate: `<svg viewBox="0 0 24 24"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>`,
+    explain: `<svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>`,
+    ai: `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15.61c-1.94-.42-3.53-1.49-4.59-2.92l1.62-1.22c.67.93 1.6 1.63 2.76 2.05v2.09zm-3.41-5.69c-.2-.62-.3-1.27-.3-1.92s.1-1.3.3-1.92l-1.61-1.23c-.53 1.03-.89 2.18-.98 3.4h2.59zm6.82 5.69v-2.09c1.16-.42 2.09-1.12 2.76-2.05l1.62 1.22c-1.06 1.43-2.65 2.5-4.59 2.92zm2.59-4.39c.2-.62.3-1.27.3-1.92s-.1-1.3-.3-1.92l1.61-1.23c.53 1.03.89 2.18.98 3.4h-2.59zM12 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`,
+    audio: `<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>`,
+    settings: `<svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69-.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19-.15-.24-.42-.12-.64l2 3.46c.12.22.39.3.61-.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2 3.46c.12-.22-.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>`,
+    tooltips: `<svg viewBox="0 0 24 24"><path d="M4 2h16v2H4zm4 14h8v-2H8v2zm-2 2h12v-2H6v2zm-4-6h2v-2H2v2zm0-4h2v-2H2v2zm2-4h2V6H4v2zm16 4h2v-2h-2v2zm0-4h2v-2h-2v2zm-2-4h2V6h-2v2z"/></svg>`,
+    tooltips_off: `<svg viewBox="0 0 24 24"><path d="M2 12h2v-2H2v2zm4-4h2V6H6v2zm14 0h2v-2h-2v2zm-2 2h2v-2h-2v2zm-2 8h-8v-2h8v2zm2-2h-12v-2h12v2zm4-6h-2v-2h2v2zm-2-4V4H4v2H2V2h20v6h-2z"/></svg>`,
+    close: `<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`,
+    send: `<svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>`,
+    help: `<svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>`
 };
+const langMap = { 'hi': 'hi-IN', 'mr': 'mr-IN', 'gu': 'gu-IN', 'bn': 'bn-IN', 'ta': 'ta-IN', 'te': 'te-IN', 'en': 'en-US' };
+
+// --- GLOBAL STATE & UI ELEMENT REFERENCES ---
 let assistantState = {
-    isBarEnabled: true,
-    theme: 'sunny',
-    language: 'en', // Default to English
-    audioMode: 'both', // Default audio mode
-    useCloudTTS: false, // New setting for high-quality voices
-    tooltipsEnabled: false,
+    isBarEnabled: true, theme: 'sunny', language: 'en',
+    audioMode: 'both', useCloudTTS: false, tooltipsEnabled: false,
     formHelperEnabled: false
 };
-
 let bar, aiPanel, tooltip, formHelper;
 
-
-// --- MAIN INITIALIZATION LOGIC ---
+// --- INITIALIZATION ---
 function init() {
     loadSettings();
 }
 
 function loadSettings() {
     chrome.storage.sync.get(Object.keys(assistantState), (result) => {
-        // Merge saved settings, ensuring defaults exist for new features
         assistantState = { ...assistantState, ...result };
-        
         if (assistantState.isBarEnabled) {
             createFloatingBar();
+            // These functions are now correctly loaded from their own files
             createAiPanel();
             if (assistantState.tooltipsEnabled) initAiTooltips();
             if (assistantState.formHelperEnabled) initFormHelper();
@@ -47,7 +46,6 @@ function loadSettings() {
     });
 }
 
-// --- UI CREATION ---
 function createFloatingBar() {
     if (document.getElementById('assistant-pro-bar')) return;
     bar = document.createElement('div');
@@ -57,234 +55,113 @@ function createFloatingBar() {
         <button id="assistant-ai-btn" class="assistant-bar-btn" title="AI Assistant">${ICONS.ai}</button>
         <button id="assistant-audio-btn" class="assistant-bar-btn" title="Read Selection">${ICONS.audio}</button>
         <button id="assistant-settings-btn" class="assistant-bar-btn" title="Settings">${ICONS.settings}</button>
-        <button id="assistant-theme-btn" class="assistant-bar-btn" title="Toggle Theme"></button>
+        <button id="assistant-tooltips-toggle-btn" class="assistant-bar-btn" title="Toggle AI Tooltips"></button>
     `;
     document.body.appendChild(bar);
+    updateTooltipToggleButton(); // from ai.js
     addBarEventListeners();
     makeDraggable(bar);
 }
 
-function createAiPanel() {
-    if (document.getElementById('assistant-pro-ai-panel')) return;
-    aiPanel = document.createElement('div');
-    aiPanel.id = 'assistant-pro-ai-panel';
-    aiPanel.innerHTML = `
-        <div class="ai-panel-header">
-            <span class="ai-panel-title">AI Chat</span>
-            <button class="ai-panel-close-btn">${ICONS.close}</button>
-        </div>
-        
-        <!-- START: The Chat View with the full form -->
-        <div id="ai-chat-view" class="ai-panel-view active">
-            <div class="ai-panel-body">
-                <div class="message bot"><p>Hello! How can I help you today?</p></div>
-            </div>
-            <div class="ai-panel-footer">
-                <form id="ai-chat-form">
-                    <input type="text" id="ai-user-input" placeholder="Ask a question..." autocomplete="off">
-                    <button type="submit" id="ai-send-button" title="Send">${ICONS.send}</button>
-                </form>
-            </div>
-        </div>
-        <!-- END: The Chat View -->
-
-        <!-- The Settings View (this can be empty, it's filled by renderSettingsPanel) -->
-        <div id="ai-settings-view" class="ai-panel-view">
-        </div>
-    `;
-    
-    // Add the panel to the page
-    document.body.appendChild(aiPanel);
-
-    // Add listener for the panel's main close button
-    aiPanel.querySelector('.ai-panel-close-btn').addEventListener('click', () => {
-        aiPanel.classList.remove('visible');
-    });
-
-    // Now, this function will work because #ai-chat-form exists in the HTML above.
-    addChatEventListeners();
-}
-
-// --- EVENT LISTENERS ---
 function addBarEventListeners() {
     document.getElementById('assistant-translate-btn').addEventListener('click', handlePageTranslation);
-    document.getElementById('assistant-ai-btn').addEventListener('click', () => { /* ... */ });
-    
-    // --- THIS IS THE NEW, COMPLETE AUDIO BUTTON LOGIC ---
+
+    document.getElementById('assistant-ai-btn').addEventListener('click', () => {
+        const selectedText = window.getSelection().toString().trim();
+        aiPanel.classList.add('visible');
+        showAiPanelTab('ai-chat-view'); // from ai.js
+        if (selectedText) {
+            const userInput = aiPanel.querySelector('#ai-user-input');
+            const chatForm = aiPanel.querySelector('#ai-chat-form');
+            userInput.value = `Explain this: "${selectedText}"`;
+            aiPanel.querySelector('#ai-model-selector').value = 'explain';
+            if (chatForm) chatForm.requestSubmit();
+        } else {
+            aiPanel.querySelector('#ai-model-selector').value = 'chat';
+        }
+    });
+
+    // --- THIS IS THE NEW, FULLY FUNCTIONAL AUDIO BUTTON LOGIC ---
     document.getElementById('assistant-audio-btn').addEventListener('click', async () => {
         const selectedText = window.getSelection().toString().trim();
         if (!selectedText) {
-            showNotification('Please select text to read.', true);
+            showNotification('Please select some text to read aloud.', true);
             return;
         }
 
-        const useCloud = assistantState.useCloudTTS;
-        const mode = assistantState.audioMode;
-        const lang = assistantState.language;
-        const langCode = langMap[lang] || langMap['en'];
+        const targetLang = assistantState.language; // e.g., 'hi'
+        const targetLangCode = langMap[targetLang] || langMap['en']; // e.g., 'hi-IN'
 
-        // --- BRANCH 1: HIGH-QUALITY VOICE LOGIC ---
-        if (useCloud) {
-            let textToSpeak = selectedText;
-            let langCodeToUse = langMap['en']; // Default to English voice
+        // --- Logic for HIGH-QUALITY (Cloud) Voices ---
+        if (assistantState.useCloudTTS) {
+            showNotification('Using high-quality voice...');
+            if (assistantState.audioMode === 'english-only') {
+                playAudioWithCloudAPI(selectedText, 'en-US');
 
-            // We translate the text first unless the mode is "English Only".
-            if (mode !== 'english-only') {
-                langCodeToUse = langCode; // Use the primary language voice
-                if (lang !== 'en') {
-                    textToSpeak = await translateText(selectedText, lang);
+            } else if (assistantState.audioMode === 'target-only') {
+                const translatedText = await translateText(selectedText, targetLang);
+                if (translatedText && !translatedText.includes('[Error]')) {
+                    playAudioWithCloudAPI(translatedText, targetLangCode);
+                }
+
+            } else { // 'both' mode - Play English, then Primary
+                const englishAudio = await getCloudAudio(selectedText, 'en-US');
+                if (englishAudio) {
+                    englishAudio.play();
+                    // When the English audio finishes, play the translated version
+                    englishAudio.onended = async () => {
+                        if (targetLang !== 'en') {
+                            const translatedText = await translateText(selectedText, targetLang);
+                            if (translatedText && !translatedText.includes('[Error]')) {
+                                playAudioWithCloudAPI(translatedText, targetLangCode);
+                            }
+                        }
+                    };
                 }
             }
-            
-            if (textToSpeak && !textToSpeak.includes('[Translation Error]')) {
-                playAudioWithCloudAPI(textToSpeak, langCodeToUse);
-            }
-        // --- BRANCH 2: STANDARD VOICE LOGIC ---
+        // --- Logic for STANDARD (Browser) Voices ---
         } else {
-            if (mode === 'both') {
-                playAudioInSequence(selectedText, lang);
-            } else if (mode === 'target-only') {
-                const translatedText = await translateText(selectedText, lang);
-                if(translatedText && !translatedText.includes('[Translation Error]')) {
-                     playAudio(translatedText, lang);
+            showNotification('Using standard browser voice...');
+            if (assistantState.audioMode === 'english-only') {
+                playAudioWithBrowser(selectedText, 'en');
+
+            } else if (assistantState.audioMode === 'target-only') {
+                const translatedText = await translateText(selectedText, targetLang);
+                if (translatedText && !translatedText.includes('[Error]')) {
+                    playAudioWithBrowser(translatedText, targetLang);
                 }
-            } else if (mode === 'english-only') {
-                playAudio(selectedText, 'en');
+
+            } else { // 'both' mode
+                // This function from audio.js handles the sequence automatically for browser voices
+                playAudioInSequence(selectedText, targetLang);
             }
         }
     });
 
     document.getElementById('assistant-settings-btn').addEventListener('click', () => {
         aiPanel.classList.toggle('visible');
-        showAiPanelTab('ai-settings-view');
-        renderSettingsPanel();
+        showAiPanelTab('ai-settings-view'); // from ai.js
+        renderSettingsPanel(); // from settings.js
     });
-    document.getElementById('assistant-theme-btn').addEventListener('click', toggleTheme);
-}
 
-function addChatEventListeners() {
-    const chatForm = aiPanel.querySelector('#ai-chat-form');
-    const userInput = aiPanel.querySelector('#ai-user-input');
-    const BACKEND_URL = 'http://127.0.0.1:5001/chatbot';
-
-    chatForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const userMessage = userInput.value.trim();
-        if (userMessage === '') return;
-        addChatMessage(userMessage, 'user');
-        userInput.value = '';
-        const loadingMessage = addChatMessage('...', 'bot loading');
-        try {
-            const response = await fetch(BACKEND_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: userMessage }),
-            });
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-            const data = await response.json();
-            loadingMessage.innerHTML = `<p>${data.answer}</p>`;
-            loadingMessage.classList.remove('loading');
-        } catch (error) {
-            console.error('Error connecting to the backend:', error);
-            loadingMessage.innerHTML = `<p>Sorry, I can't connect. Please ensure the backend server is running.</p>`;
-            loadingMessage.classList.remove('loading');
-        }
-    });
-}
-
-function addChatMessage(text, type) {
-    const chatBody = aiPanel.querySelector('.ai-panel-body');
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${type}`;
-    if (type.includes('loading')) {
-        messageDiv.innerHTML = `<span></span><span></span><span></span>`;
-    } else {
-        const p = document.createElement('p');
-        p.textContent = text;
-        messageDiv.appendChild(p);
-    }
-    chatBody.appendChild(messageDiv);
-    chatBody.scrollTop = chatBody.scrollHeight;
-    return messageDiv;
-}
-// MODIFIED: Now a full settings panel renderer
-
-// --- SETTINGS PANEL ---
-function renderSettingsPanel() {
-    const settingsView = document.getElementById('ai-settings-view');
-    settingsView.innerHTML = `
-        <div class="ai-panel-body settings-body">
-            <h3>Settings</h3>
-            
-            <div class="setting-row">
-                <label for="language-setting">Primary Language</label>
-                <select id="language-setting">
-                    <option value="en" ${assistantState.language === 'en' ? 'selected' : ''}>English</option>
-                    <option value="hi" ${assistantState.language === 'hi' ? 'selected' : ''}>Hindi</option>
-                    <option value="mr" ${assistantState.language === 'mr' ? 'selected' : ''}>Marathi</option>
-                    <option value="bn" ${assistantState.language === 'bn' ? 'selected' : ''}>Bengali</option>
-                    <option value="gu" ${assistantState.language === 'gu' ? 'selected' : ''}>Gujarati</option>
-                    <option value="ta" ${assistantState.language === 'ta' ? 'selected' : ''}>Tamil</option>
-                    <option value="te" ${assistantState.language === 'te' ? 'selected' : ''}>Telugu</option>
-                </select>
-            </div>
-
-            <div class="setting-group">
-                <label>Audio Playback Mode</label>
-                <div class="radio-group">
-                    <div class="radio-option"><input type="radio" id="audio-both" name="audio-mode" value="both" ${assistantState.audioMode === 'both' ? 'checked' : ''}><label for="audio-both">English, then Primary</label></div>
-                    <div class="radio-option"><input type="radio" id="audio-target" name="audio-mode" value="target-only" ${assistantState.audioMode === 'target-only' ? 'checked' : ''}><label for="audio-target">Primary Language Only</label></div>
-                    <div class="radio-option"><input type="radio" id="audio-english" name="audio-mode" value="english-only" ${assistantState.audioMode === 'english-only' ? 'checked' : ''}><label for="audio-english">English Only</label></div>
-                </div>
-            </div>
-
-            <!-- NEW HIGH-QUALITY VOICE TOGGLE -->
-            <div class="setting-row">
-                <label for="cloud-tts-toggle">Enable High-Quality Voices</label>
-                <label class="switch">
-                    <input type="checkbox" id="cloud-tts-toggle" ${assistantState.useCloudTTS ? 'checked' : ''}>
-                    <span class="slider round"></span>
-                </label>
-            </div>
-
-            <div class="setting-row">
-                <label for="tooltip-toggle">Enable AI Tooltips</label>
-                <label class="switch"><input type="checkbox" id="tooltip-toggle" ${assistantState.tooltipsEnabled ? 'checked' : ''}><span class="slider round"></span></label>
-            </div>
-
-            <div class="setting-row">
-                <label for="form-helper-toggle">Enable Form Helper</label>
-                <label class="switch"><input type="checkbox" id="form-helper-toggle" ${assistantState.formHelperEnabled ? 'checked' : ''}><span class="slider round"></span></label>
-            </div>
-        </div>
-        <div class="ai-panel-footer">
-            <button id="save-settings-btn">Save and Apply</button>
-        </div>
-    `;
-    addSettingsSaveListener();
-}
-function addSettingsSaveListener() {
-    document.getElementById('save-settings-btn').addEventListener('click', () => {
-        // Read all values from the UI
-        assistantState.language = document.getElementById('language-setting').value;
-        assistantState.audioMode = document.querySelector('input[name="audio-mode"]:checked').value;
-        assistantState.useCloudTTS = document.getElementById('cloud-tts-toggle').checked;
-        assistantState.tooltipsEnabled = document.getElementById('tooltip-toggle').checked;
-        assistantState.formHelperEnabled = document.getElementById('form-helper-toggle').checked;
-
-        // Save the entire updated state object
-        chrome.storage.sync.set(assistantState, () => {
-            console.log('ACTION: Settings saved. Cloud TTS enabled:', assistantState.useCloudTTS); 
-            showNotification('Settings saved!');
-            destroyUI();
-            init();
+    document.getElementById('assistant-tooltips-toggle-btn').addEventListener('click', () => {
+        assistantState.tooltipsEnabled = !assistantState.tooltipsEnabled;
+        chrome.storage.sync.set({ tooltipsEnabled: assistantState.tooltipsEnabled }, () => {
+            updateTooltipToggleButton(); // from ai.js
+            if (assistantState.tooltipsEnabled) {
+                initAiTooltips(); // from ai.js
+            } else {
+                destroyAiTooltips(); // from ai.js
+            }
+            showNotification(`AI Tooltips ${assistantState.tooltipsEnabled ? 'Enabled' : 'Disabled'}.`);
         });
     });
 }
+
+// --- TRANSLATION LOGIC ---
 async function handlePageTranslation() {
     const translateBtn = document.getElementById('assistant-translate-btn');
     if (translateBtn.disabled) return;
-
     translateBtn.disabled = true;
     translateBtn.classList.add('processing');
     showNotification('Starting translation...');
@@ -295,21 +172,14 @@ async function handlePageTranslation() {
             showNotification('No text found to translate.', true);
             return;
         }
-
-        // --- THIS IS THE CORRECT WAY ---
-        // It uses the language stored in the 'assistantState' object from your settings.
         const selectedLanguage = assistantState.language;
-
         const CHUNK_SIZE = 40;
-
         for (let i = 0; i < textNodes.length; i += CHUNK_SIZE) {
             const chunk = textNodes.slice(i, i + CHUNK_SIZE);
             const combinedText = chunk.map(n => n.nodeValue).join('|||');
-            
+            // Calls the function from translator.js
             const translatedCombinedText = await translateText(combinedText, selectedLanguage);
-
             const translatedParts = translatedCombinedText.split('|||');
-
             chunk.forEach((node, index) => {
                 if (translatedParts[index]) {
                     node.nodeValue = ` ${translatedParts[index].trim()} `;
@@ -327,122 +197,15 @@ async function handlePageTranslation() {
     }
 }
 
-// NEW: Shows the correct tab in the AI panel
-function showAiPanelTab(tabId) {
-    document.querySelectorAll('.ai-panel-view').forEach(view => view.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    const title = tabId === 'ai-settings-view' ? 'Settings' : 'AI Chat';
-    aiPanel.querySelector('.ai-panel-title').textContent = title;
-}
-
-
-
-// NEW: Frontend logic for AI Tooltips
-function initAiTooltips() {
-    console.log("💡 AI Tooltips Enabled");
-    document.body.addEventListener('mouseover', handleTooltipMouseOver);
-    document.body.addEventListener('mouseout', handleTooltipMouseOut);
-}
-
-async function handleTooltipMouseOver(e) {
-    const target = e.target.closest('a, button, input, [role="button"], [role="link"]');
-    if (!target) return;
-
-    if (!tooltip) {
-        tooltip = document.createElement('div');
-        tooltip.id = 'assistant-pro-tooltip';
-        document.body.appendChild(tooltip);
-    }
-    
-    const textContent = target.textContent.trim() || target.placeholder || target.name || 'this element';
-    tooltip.innerHTML = '<i>AI is thinking...</i>';
-    tooltip.style.display = 'block';
-    updateTooltipPosition(e);
-
-    // Call the mock backend function for now
-    const explanation = await getAIExplanation(textContent);
-    tooltip.textContent = explanation;
-    updateTooltipPosition(e);
-}
-
-function handleTooltipMouseOut() {
-    if (tooltip) tooltip.style.display = 'none';
-}
-
-function updateTooltipPosition(e) {
-    if (!tooltip) return;
-    tooltip.style.left = `${e.pageX + 15}px`;
-    tooltip.style.top = `${e.pageY + 15}px`;
-}
-
-// NEW: Frontend logic for Form Helper
-function initFormHelper() {
-    console.log("✍️ Form Helper Enabled");
-    document.body.addEventListener('focusin', handleFormFocus);
-}
-
-function handleFormFocus(e) {
-    const input = e.target.closest('input, textarea, select');
-    if (!input) {
-        if (formHelper) formHelper.remove();
-        formHelper = null;
-        return;
-    }
-    const form = input.closest('form');
-    if (!form) return;
-
-    if (!formHelper) {
-        formHelper = document.createElement('div');
-        formHelper.id = 'assistant-pro-form-helper';
-        document.body.appendChild(formHelper);
-    }
-    
-    // Simple frontend implementation
-    const label = form.querySelector(`label[for="${input.id}"]`);
-    formHelper.innerHTML = `
-        <div class="form-helper-header">${ICONS.help} Form Helper</div>
-        <div class="form-helper-body">
-            <p><strong>Current Field:</strong> ${label ? label.textContent : (input.name || 'Unnamed Field')}</p>
-            <p><strong>Type:</strong> ${input.type || 'text'}</p>
-        </div>
-    `;
-    // Position helper next to the form
-    const formRect = form.getBoundingClientRect();
-    formHelper.style.top = `${formRect.top + window.scrollY}px`;
-    formHelper.style.left = `${formRect.right + window.scrollX + 10}px`;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// --- NEW HELPER & TRANSLATION FUNCTIONS ---
-
+// --- HELPER FUNCTIONS (SHARED) ---
 function getTextNodes() {
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
         acceptNode: node => {
+            if (node.parentNode.closest('#assistant-pro-bar, #assistant-pro-ai-panel')) {
+                return NodeFilter.FILTER_REJECT;
+            }
             const parentTag = node.parentNode.nodeName.toUpperCase();
-            if (parentTag === 'SCRIPT' || parentTag === 'STYLE' || parentTag === 'NOSCRIPT' || node.parentNode.closest('#assistant-pro-bar, #assistant-pro-ai-panel')) {
+            if (parentTag === 'SCRIPT' || parentTag === 'STYLE' || parentTag === 'NOSCRIPT') {
                 return NodeFilter.FILTER_REJECT;
             }
             if (!node.nodeValue.trim()) {
@@ -468,26 +231,15 @@ function showNotification(message, isError = false) {
     setTimeout(() => notification.classList.remove('visible'), 4000);
 }
 
-
-// --- EXISTING HELPER FUNCTIONS ---
-function toggleTheme() {
-    chrome.storage.sync.get('theme', (result) => {
-        const newTheme = result.theme === 'sunny' ? 'night' : 'sunny';
-        chrome.storage.sync.set({ theme: newTheme }, () => applyTheme(newTheme));
-    });
-}
-
 function applyTheme(theme) {
-    const themeIconBtn = document.getElementById('assistant-theme-btn');
-    const elementsToTheme = document.querySelectorAll('#assistant-pro-bar, #assistant-pro-ai-panel');
+    const elementsToTheme = document.querySelectorAll('#assistant-pro-bar, #assistant-pro-ai-panel, #assistant-pro-tooltip, #assistant-pro-form-helper');
+    assistantState.theme = theme;
     if (theme === 'night') {
-        document.body.classList.add('assistant-night-mode');
-        elementsToTheme.forEach(el => el.classList.add('night-theme'));
-        if (themeIconBtn) themeIconBtn.innerHTML = ICONS.sunny;
+        document.documentElement.classList.add('assistant-night-theme-html');
+        elementsToTheme.forEach(el => el && el.classList.add('night-theme'));
     } else {
-        document.body.classList.remove('assistant-night-mode');
-        elementsToTheme.forEach(el => el.classList.remove('night-theme'));
-        if (themeIconBtn) themeIconBtn.innerHTML = ICONS.night;
+        document.documentElement.classList.remove('assistant-night-theme-html');
+        elementsToTheme.forEach(el => el && el.classList.remove('night-theme'));
     }
 }
 
@@ -502,13 +254,15 @@ function makeDraggable(element) {
 function destroyUI() {
     if (bar) bar.remove();
     if (aiPanel) aiPanel.remove();
-    bar = null;
-    aiPanel = null;
+    if (tooltip) tooltip.remove();
+    if (formHelper) formHelper.remove();
+    bar = aiPanel = tooltip = formHelper = null;
 }
 
 // --- CHROME MESSAGE LISTENER ---
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'toggleBar') {
+        assistantState.isBarEnabled = request.isEnabled;
         if (request.isEnabled) {
             init();
         } else {

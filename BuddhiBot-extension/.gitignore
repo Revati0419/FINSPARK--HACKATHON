@@ -1,0 +1,5 @@
+# Ignore the file containing secret keys
+.env
+
+# Ignore the build output directory
+dist/

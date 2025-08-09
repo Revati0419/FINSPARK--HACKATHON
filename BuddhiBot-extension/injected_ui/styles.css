@@ -1,3 +1,6 @@
+/* --- css/style.css --- */
+
+/* GENERAL & GLOBAL STYLES */
 :root {
     --primary-color: #4a90e2;
     --background-light: #ffffff;
@@ -5,6 +8,7 @@
     --text-light: #333333;
     --text-dark: #ecf0f1;
     --border-color: #e0e0e0;
+    --border-color-dark: #444;
     --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     --border-radius: 8px;
 }
@@ -29,7 +33,7 @@
 
 #assistant-pro-bar.night-theme {
     background-color: var(--background-dark);
-    border-color: #444;
+    border-color: var(--border-color-dark);
 }
 
 .assistant-bar-btn {
@@ -58,6 +62,7 @@
     fill: var(--text-light);
 }
 
+/* THIS IS THE FIX: A specific rule to change icon color in night mode */
 #assistant-pro-bar.night-theme .assistant-bar-btn svg {
     fill: var(--text-dark);
 }
@@ -85,8 +90,7 @@
 
 #assistant-pro-ai-panel.night-theme {
     background-color: var(--background-dark);
-    border-color: #444;
-   
+    border-color: var(--border-color-dark);
 }
 
 /* Base View Rules (shared by Chat and Settings) */
@@ -94,7 +98,7 @@
     display: none;
     flex-grow: 1;
     flex-direction: column;
-    height: 100%; /* Important for proper layout */
+    height: 100%;
 }
 
 .ai-panel-view.active {

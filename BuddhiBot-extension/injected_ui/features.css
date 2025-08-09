@@ -20,7 +20,7 @@
 #assistant-pro-tooltip.night-theme {
     background-color: var(--background-dark);
     color: var(--text-dark);
-    border: 1px solid #444;
+    border: 1px solid var(--border-color-dark);
 }
 
 /* --- Form Helper Styles --- */
@@ -38,7 +38,7 @@
 
 #assistant-pro-form-helper.night-theme {
     background-color: var(--background-dark);
-    border-color: #444;
+    border-color: var(--border-color-dark);
 }
 
 .form-helper-header {

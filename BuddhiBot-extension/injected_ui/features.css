@@ -1,0 +1,82 @@
+/* --- css/features.css --- */
+
+/* --- AI Tooltip Styles --- */
+#assistant-pro-tooltip {
+    position: absolute;
+    z-index: 10000001;
+    max-width: 250px;
+    padding: 8px 12px;
+    background-color: #323232;
+    color: #ffffff;
+    border-radius: var(--border-radius);
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: left;
+    pointer-events: none;
+    display: none;
+    box-shadow: var(--shadow);
+}
+
+#assistant-pro-tooltip.night-theme {
+    background-color: var(--background-dark);
+    color: var(--text-dark);
+    border: 1px solid #444;
+}
+
+/* --- Form Helper Styles --- */
+#assistant-pro-form-helper {
+    position: absolute;
+    z-index: 9999990;
+    width: 280px;
+    background: var(--background-light);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    border-radius: var(--border-radius);
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+
+#assistant-pro-form-helper.night-theme {
+    background-color: var(--background-dark);
+    border-color: #444;
+}
+
+.form-helper-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    background: #f1f3f4;
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 14px;
+}
+#assistant-pro-form-helper.night-theme .form-helper-header {
+    background-color: #34495e;
+    color: var(--text-dark);
+}
+
+.form-helper-header svg {
+    width: 20px;
+    height: 20px;
+    fill: #5f6368;
+}
+#assistant-pro-form-helper.night-theme .form-helper-header svg {
+    fill: var(--text-dark);
+}
+
+.form-helper-body {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-light);
+}
+#assistant-pro-form-helper.night-theme .form-helper-body {
+    color: var(--text-dark);
+}
+
+.form-helper-body p {
+    margin: 0;
+}

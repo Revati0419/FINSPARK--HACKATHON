@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-# Note the change here: we now pass the language code
+# Ensure this is the name of your final, best logic file
 from rag_chain_new_logic import create_rag_chain, get_rag_response
 
 app = Flask(__name__)
@@ -10,6 +10,7 @@ print("Starting server... This will take several minutes to load all AI models."
 create_rag_chain()
 print("Server is ready to accept requests.")
 
+# --- FIX 1: The route MUST match the URL in your JavaScript file ---
 @app.route('/', methods=['POST'])
 def handle_chat():
     if not request.is_json:
@@ -17,18 +18,18 @@ def handle_chat():
 
     data = request.get_json()
     user_message = data.get('message', '')
-    # --- NEW: Get the language from the request ---
-    user_language = data.get('language', 'en') # Default to 'en' if not provided
+    # Using the more specific language codes from the merged JS
+    user_language = data.get('language', 'en-US') 
+    
+    # This part correctly handles the 'explain' mode from your teammate's code
+    mode = data.get('mode', 'chat') 
+    print(f"Received message: '{user_message}' in language: '{user_language}' with mode: '{mode}'")
 
-    if not user_message:
-        return jsonify({"error": "Missing 'message' in request"}), 400
+    # --- FIX 2: Pass the mode to your logic function ---
+    bot_response_payload = get_rag_response(user_message, user_language, mode)
 
-    print(f"Received message: '{user_message}' in language: '{user_language}'")
-
-    # --- MODIFIED: Pass both message and language to the logic function ---
-    bot_response = get_rag_response(user_message, user_language)
-
-    return jsonify({"answer": bot_response})
+    # Return the full payload (answer and contexts)
+    return jsonify(bot_response_payload)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=False)

@@ -1,5 +1,3 @@
-// ✅ utils/ai.js
-// This file manages the AI Panel's UI, chat logic, tooltips, and form helper.
 
 function createAiPanel() {
     if (document.getElementById('assistant-pro-ai-panel')) return;
@@ -59,9 +57,7 @@ function addChatEventListeners() {
     const userInput = aiPanel.querySelector('#ai-user-input');
     const langSelector = aiPanel.querySelector('#ai-language-selector');
     const modelSelector = aiPanel.querySelector('#ai-model-selector'); // Your model selector
-    const BACKEND_URL = 'http://127.0.0.1:5001/'; // Tanuja's correct endpoint
-
-    // Tanuja's excellent multi-language greetings
+    const BACKEND_URL = 'http://127.0.0.1:5001/';
     const GREETINGS = {
         'en-US': 'Hello! How can I help you with your banking questions?',
         'mr-IN': 'नमस्कार! मी तुमच्या बँकिंग प्रश्नांसाठी कशी मदत करू शकते?',

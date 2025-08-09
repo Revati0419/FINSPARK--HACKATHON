@@ -29,9 +29,8 @@
         "content_script.js"
       ],
       "css": [
-        "injected_ui/floating_bar.css",
-        "injected_ui/ai_panel.css",
-        "injected_ui/tooltip.css"
+        "injected_ui/styles.css"
+        
       ]
     }
   ],

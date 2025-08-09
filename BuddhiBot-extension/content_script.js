@@ -11,23 +11,20 @@ const ICONS = {
     send: `<svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>`
 };
 
-let bar, aiPanel; // To hold references to the DOM elements
+let bar, aiPanel;
 
-// --- MAIN INITIALIZATION LOGIC ---
 function init() {
     chrome.storage.sync.get(['isBarEnabled', 'theme'], (result) => {
         if (result.isBarEnabled) {
             createFloatingBar();
-            createAiPanel(); // Create AI panel along with the bar
+            createAiPanel();
         }
         applyTheme(result.theme || 'sunny');
     });
 }
 
-// --- UI CREATION ---
 function createFloatingBar() {
     if (document.getElementById('assistant-pro-bar')) return;
-
     bar = document.createElement('div');
     bar.id = 'assistant-pro-bar';
     bar.innerHTML = `
@@ -43,10 +40,8 @@ function createFloatingBar() {
 
 function createAiPanel() {
     if (document.getElementById('assistant-pro-ai-panel')) return;
-
     aiPanel = document.createElement('div');
     aiPanel.id = 'assistant-pro-ai-panel';
-    // --- MODIFIED: Added a language selector dropdown to the header ---
     aiPanel.innerHTML = `
         <div class="ai-panel-header">
             <span class="ai-panel-title">AI Banking Assistant</span>
@@ -70,11 +65,9 @@ function createAiPanel() {
         </div>
     `;
     document.body.appendChild(aiPanel);
-
     aiPanel.querySelector('.ai-panel-close-btn').addEventListener('click', () => {
         aiPanel.classList.remove('visible');
     });
-
     addChatEventListeners();
 }
 
@@ -82,40 +75,56 @@ function addBarEventListeners() {
     document.getElementById('assistant-translate-btn').addEventListener('click', () => {
         console.log('Full page translation initiated.');
     });
-
     document.getElementById('assistant-ai-btn').addEventListener('click', () => {
         aiPanel.classList.toggle('visible');
     });
-
     document.getElementById('assistant-audio-btn').addEventListener('click', () => {
         console.log('Audio hover toggled.');
     });
-
     document.getElementById('assistant-theme-btn').addEventListener('click', toggleTheme);
 }
 
-
+// --- vvv THIS ENTIRE FUNCTION IS THE MAIN CHANGE vvv ---
 function addChatEventListeners() {
     const chatForm = aiPanel.querySelector('#ai-chat-form');
     const userInput = aiPanel.querySelector('#ai-user-input');
-    // --- NEW: Get a reference to the language selector ---
     const langSelector = aiPanel.querySelector('#ai-language-selector');
     const BACKEND_URL = 'http://127.0.0.1:5001/chatbot';
 
+    // --- NEW: A dictionary of greetings for each language ---
+    const GREETINGS = {
+        en: 'Hello! How can I help you with your banking questions?',
+        mr: 'नमस्कार! मी तुमच्या बँकिंग प्रश्नांसाठी कशी मदत करू शकते?',
+        hi: 'नमस्ते! मैं आपके बैंकिंग संबंधी प्रश्नों में कैसे मदद कर सकती हूँ?',
+        bn: 'নমস্কার! আমি আপনার ব্যাংকিং সংক্রান্ত প্রশ্নে কিভাবে সাহায্য করতে পারি?',
+        gu: 'નમસ્તે! હું તમારા બેંકિંગ સંબંધિત પ્રશ્નોમાં કેવી રીતે મદદ કરી શકું?'
+    };
+
+    // --- NEW: Event listener for when the language is changed ---
+    langSelector.addEventListener('change', (event) => {
+        const chatBody = aiPanel.querySelector('.ai-panel-body');
+        
+        // 1. Clear the entire conversation
+        chatBody.innerHTML = ''; 
+
+        // 2. Get the new language and its corresponding greeting
+        const newLang = event.target.value;
+        const greeting = GREETINGS[newLang] || GREETINGS['en']; // Fallback to English
+
+        // 3. Add the new greeting message to the empty chat window
+        addChatMessage(greeting, 'bot');
+    });
+
+    // --- This is your existing form submission logic, it remains unchanged ---
     chatForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const userMessage = userInput.value.trim();
         if (userMessage === '') return;
-
-        // --- NEW: Get the selected language value ---
         const selectedLang = langSelector.value;
-
         addChatMessage(userMessage, 'user');
         userInput.value = '';
         const loadingMessage = addChatMessage('...', 'bot loading');
-
         try {
-            // --- MODIFIED: Send the language in the request body ---
             const response = await fetch(BACKEND_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -124,13 +133,10 @@ function addChatEventListeners() {
                     language: selectedLang
                 }),
             });
-
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-            
             const data = await response.json();
             loadingMessage.innerHTML = `<p>${data.answer}</p>`;
             loadingMessage.classList.remove('loading');
-
         } catch (error) {
             console.error('Error connecting to the backend:', error);
             loadingMessage.innerHTML = `<p>Sorry, I can't connect. Please ensure the backend server is running.</p>`;
@@ -138,13 +144,13 @@ function addChatEventListeners() {
         }
     });
 }
+// --- ^^^ THIS ENTIRE FUNCTION IS THE MAIN CHANGE ^^^ ---
 
 
 function addChatMessage(text, type) {
     const chatBody = aiPanel.querySelector('.ai-panel-body');
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}`;
-
     if (type.includes('loading')) {
         messageDiv.innerHTML = `<span></span><span></span><span></span>`;
     } else {
@@ -152,14 +158,11 @@ function addChatMessage(text, type) {
         p.textContent = text;
         messageDiv.appendChild(p);
     }
-
     chatBody.appendChild(messageDiv);
-    chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll
+    chatBody.scrollTop = chatBody.scrollHeight;
     return messageDiv;
 }
 
-
-// --- FEATURES & HELPERS (Unchanged) ---
 function toggleTheme() {
     chrome.storage.sync.get('theme', (result) => {
         const newTheme = result.theme === 'sunny' ? 'night' : 'sunny';
@@ -168,10 +171,8 @@ function toggleTheme() {
 }
 
 function applyTheme(theme) {
-    // This function logic remains the same
     const themeIconBtn = document.getElementById('assistant-theme-btn');
     const elementsToTheme = document.querySelectorAll('#assistant-pro-bar, #assistant-pro-ai-panel');
-
     if (theme === 'night') {
         document.body.classList.add('assistant-night-mode');
         elementsToTheme.forEach(el => {
@@ -190,10 +191,8 @@ function applyTheme(theme) {
 }
 
 function makeDraggable(element) {
-    // This function logic remains the same
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     element.onmousedown = dragMouseDown;
-
     function dragMouseDown(e) { e.preventDefault(); pos3 = e.clientX; pos4 = e.clientY; document.onmouseup = closeDragElement; document.onmousemove = elementDrag; }
     function elementDrag(e) { e.preventDefault(); pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY; pos3 = e.clientX; pos4 = e.clientY; element.style.top = (element.offsetTop - pos2) + "px"; element.style.left = (element.offsetLeft - pos1) + "px"; }
     function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
@@ -206,7 +205,6 @@ function destroyUI() {
     aiPanel = null;
 }
 
-// --- CHROME MESSAGE LISTENER (Unchanged) ---
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'toggleBar') {
         if (request.isEnabled) {
@@ -217,5 +215,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-// --- RUN SCRIPT ---
 init();

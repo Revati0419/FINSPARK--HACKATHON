@@ -1,24 +1,33 @@
-/* --- css/style.css --- */
+/* ✅ css/styles.css (The Global Stylesheet) */
 
-/* GENERAL & GLOBAL STYLES */
+/* --- 1. GLOBAL VARIABLES & THEMES --- */
 :root {
-    --primary-color: #4a90e2;
+    /* Define the core color palette. Inspired by your teammate's pleasant green theme. */
+    --primary-color: #468855;
+    --primary-color-dark: #3a7a4a; /* For hover effects */
+    --user-bubble-color: #e1ebd8;
+    --bot-bubble-color: #aacbc3;
+    --chat-body-bg: #f7faf7; /* A subtle off-white for the chat area */
+
+    /* Define structural colors */
     --background-light: #ffffff;
     --background-dark: #2c3e50;
     --text-light: #333333;
     --text-dark: #ecf0f1;
     --border-color: #e0e0e0;
     --border-color-dark: #444;
+
+    /* Define common styles */
     --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    --border-radius: 8px;
+    --border-radius: 12px; /* A slightly more modern, rounded look */
 }
 
-/* --- FLOATING BAR --- */
+/* --- 2. FLOATING BAR --- */
 #assistant-pro-bar {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 999999;
+    z-index: 99999999; /* Highest z-index */
     display: flex;
     align-items: center;
     gap: 5px;
@@ -27,7 +36,7 @@
     border-radius: var(--border-radius);
     padding: 5px;
     box-shadow: var(--shadow);
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, border-color 0.3s;
     cursor: grab;
 }
 
@@ -41,7 +50,7 @@
     border: none;
     padding: 8px;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 8px;
     transition: background-color 0.2s;
     display: flex;
     align-items: center;
@@ -60,32 +69,36 @@
     width: 24px;
     height: 24px;
     fill: var(--text-light);
+    transition: fill 0.3s;
 }
 
-/* THIS IS THE FIX: A specific rule to change icon color in night mode */
 #assistant-pro-bar.night-theme .assistant-bar-btn svg {
     fill: var(--text-dark);
 }
 
-/* --- AI PANEL SHELL / CONTAINER --- */
+/* --- 3. AI PANEL SHELL / CONTAINER --- */
 #assistant-pro-ai-panel {
     position: fixed;
-    bottom: 80px;
+    top: 50px;
     right: 20px;
-    width: 350px;
-    height: 500px;
-    z-index: 999998;
+    width: 360px; /* Slightly wider for better spacing */
+    height: calc(100vh - 70px); /* Responsive height */
+    max-height: 600px;
+    z-index: 99999998;
     background-color: var(--background-light);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
-    display: none; /* Hidden by default */
+    display: flex; /* Changed from 'none' to 'flex' */
     flex-direction: column;
     overflow: hidden;
     border: 1px solid var(--border-color);
+    /* Animation for sliding in and out */
+    transform: translateX(calc(100% + 30px));
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s, border-color 0.3s;
 }
 
 #assistant-pro-ai-panel.visible {
-    display: flex;
+    transform: translateX(0);
 }
 
 #assistant-pro-ai-panel.night-theme {
@@ -93,7 +106,7 @@
     border-color: var(--border-color-dark);
 }
 
-/* Base View Rules (shared by Chat and Settings) */
+/* --- 4. SHARED VIEW RULES (for Chat, Settings, etc.) --- */
 .ai-panel-view {
     display: none;
     flex-grow: 1;

@@ -6,10 +6,19 @@ function createAiPanel() {
     aiPanel = document.createElement('div');
     aiPanel.id = 'assistant-pro-ai-panel';
 
-    // The HTML for the voice controls STAYS HERE because it's part of the panel's layout.
+    // MERGED HTML: This combines YOUR advanced UI with Tanuja's language selector.
     aiPanel.innerHTML = `
         <div class="ai-panel-header">
-            <span class="ai-panel-title">AI Chat</span>
+            <span class="ai-panel-title">AI Assistant</span>
+            <!-- MERGED: Added Tanuja's language selector -->
+            <select id="ai-language-selector" title="Select Language">
+                <option value="en-US">English</option>
+                <option value="mr-IN">Marathi</option>
+                <option value="hi-IN">Hindi</option>
+                <option value="bn-IN">Bengali</option>
+                <option value="gu-IN">Gujarati</option>
+            </select>
+            <!-- Your existing model selector -->
             <select id="ai-model-selector">
                 <option value="chat">AI Chat</option>
                 <option value="explain">Expert Explainer</option>
@@ -20,15 +29,11 @@ function createAiPanel() {
             <div class="ai-panel-body"><div class="message bot"><p>Hello! How can I help you today?</p></div></div>
             <div class="ai-panel-footer">
                 <form id="ai-chat-form">
+                    <!-- Your existing voice controls are kept -->
                     <div class="voice-input-controls">
                         <button type="button" id="ai-mic-button" class="assistant-icon-btn" title="Voice Input">
                             <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1.2-9.1c0-.66.54-1.2 1.2-1.2s1.2.54 1.2 1.2V9c0 .66-.54 1.2-1.2 1.2s-1.2-.54-1.2-1.2V4.9zm4.8 4.2c0 2.5-2.02 4.1-4.6 4.1s-4.6-1.6-4.6-4.1H5c0 3.53 2.61 6.43 6 6.92V21h2v-2.08c3.39-.49 6-3.39 6-6.92h-1.4z"/></svg>
                         </button>
-                        <select id="ai-voice-language-selector">
-                            <option value="en-US">English</option>
-                            <option value="mr-IN">Marathi</option>
-                            <option value="hi-IN">Hindi</option>
-                        </select>
                     </div>
                     <input type="text" id="ai-user-input" placeholder="Ask a question..." autocomplete="off">
                     <button type="submit" id="ai-send-button" title="Send">${ICONS.send}</button>
@@ -42,40 +47,85 @@ function createAiPanel() {
 
     // Attach event listeners
     addChatEventListeners();
-    // This call now runs the function from our separate speech.js file, as defined in manifest.json
+    // This call to your existing speech.js function is preserved
     initSpeechRecognition();
 }
 
+
+// MERGED LOGIC: This function is now the powerful version from Tanuja,
+// but adapted to work with your existing "Expert Explainer" mode.
 function addChatEventListeners() {
     const chatForm = aiPanel.querySelector('#ai-chat-form');
     const userInput = aiPanel.querySelector('#ai-user-input');
-    const modelSelector = aiPanel.querySelector('#ai-model-selector');
+    const langSelector = aiPanel.querySelector('#ai-language-selector');
+    const modelSelector = aiPanel.querySelector('#ai-model-selector'); // Your model selector
+    const BACKEND_URL = 'http://127.0.0.1:5001/'; // Tanuja's correct endpoint
+
+    // Tanuja's excellent multi-language greetings
+    const GREETINGS = {
+        'en-US': 'Hello! How can I help you with your banking questions?',
+        'mr-IN': 'नमस्कार! मी तुमच्या बँकिंग प्रश्नांसाठी कशी मदत करू शकते?',
+        'hi-IN': 'नमस्ते! मैं आपके बैंकिंग संबंधी प्रश्नों में कैसे मदद कर सकती हूँ?',
+        'bn-IN': 'নমস্কার! আমি আপনার ব্যাংকিং সংক্রান্ত প্রশ্নে কিভাবে সাহায্য করতে পারি?',
+        'gu-IN': 'નમસ્તે! હું તમારા બેંકિંગ સંબંધિત પ્રશ્નોમાં કેવી રીતે મદદ કરી શકું?'
+    };
+
+    // Tanuja's smart event listener for language changes
+    langSelector.addEventListener('change', (event) => {
+        const chatBody = aiPanel.querySelector('.ai-panel-body');
+        chatBody.innerHTML = ''; // Clear conversation
+        const newLang = event.target.value;
+        const greeting = GREETINGS[newLang] || GREETINGS['en-US'];
+        addChatMessage(greeting, 'bot');
+    });
 
     chatForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const userMessage = userInput.value.trim();
         if (userMessage === '') return;
 
+        const selectedLang = langSelector.value;
+        const currentMode = modelSelector.value;
+
         addChatMessage(userMessage, 'user');
         userInput.value = '';
         const loadingMessage = addChatMessage('...', 'bot loading');
-        const currentMode = modelSelector.value;
         let aiResponse = "Sorry, something went wrong.";
 
         try {
-            // This correctly calls your local python backend
-            const response = await fetch('http://127.0.0.1:5001', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: userMessage, mode: currentMode }),
-            });
-            if (!response.ok) throw new Error('AI backend failed');
-            const data = await response.json();
-            aiResponse = data.answer;
-
+            // MERGED: Check if "Expert Explainer" mode is active
+            if (currentMode === 'explain') {
+                // Use your existing logic for this mode
+                // For example, calling the same backend with a different parameter
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: userMessage,
+                        language: selectedLang,
+                        mode: 'explain' // Send the mode to the backend
+                    }),
+                });
+                if (!response.ok) throw new Error('AI backend failed for explainer mode');
+                const data = await response.json();
+                aiResponse = data.answer;
+            } else {
+                // Use Tanuja's superior logic for the standard chatbot
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: userMessage,
+                        language: selectedLang
+                    }),
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const data = await response.json();
+                aiResponse = data.answer;
+            }
         } catch (error) {
-            console.error('Error with AI backend:', error);
-            aiResponse = "Sorry, I can't connect to the AI right now.";
+            console.error('Error connecting to the backend:', error);
+            aiResponse = `Sorry, I can't connect. Please ensure the backend server is running. Error: ${error.message}`;
         }
 
         loadingMessage.innerHTML = `<p>${aiResponse}</p>`;
@@ -83,11 +133,8 @@ function addChatEventListeners() {
     });
 }
 
-// --- The initSpeechRecognition function has been REMOVED from this file ---
-// --- It now lives in its own dedicated utils/speech.js file ---
 
 
-// --- ALL YOUR OTHER FUNCTIONS FOR AI.JS REMAIN BELOW ---
 
 function addChatMessage(text, type) {
     const chatBody = aiPanel.querySelector('.ai-panel-body');

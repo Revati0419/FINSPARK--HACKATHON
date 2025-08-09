@@ -33,7 +33,8 @@
         "injected_ui/styles.css",
         "injected_ui/ai-chat.css",
         "injected_ui/settings.css",
-        "injected_ui/features.css"
+        "injected_ui/features.css",
+        "injected_ui/ai_panel.css"
       ]
     }
   ],

@@ -10,7 +10,7 @@ print("Starting server... This will take several minutes to load all AI models."
 create_rag_chain()
 print("Server is ready to accept requests.")
 
-@app.route('/chatbot', methods=['POST'])
+@app.route('/', methods=['POST'])
 def handle_chat():
     if not request.is_json:
         return jsonify({"error": "Request must be JSON"}), 400

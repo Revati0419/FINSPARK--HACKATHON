@@ -48,7 +48,7 @@ function addChatEventListeners() {
     const userInput = aiPanel.querySelector('#ai-user-input');
     // REMOVED: const langSelector is no longer needed.
     const modelSelector = aiPanel.querySelector('#ai-model-selector');
-    const BACKEND_URL = 'http://127.0.0.1:5001/chatbot';
+    const BACKEND_URL = 'http://127.0.0.1:5001/';
 
     // Greetings now use the BCP-47 codes for consistency
     const GREETINGS = {
